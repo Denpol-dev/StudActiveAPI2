@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  run-api-locally:
+    depends_on:
+       - stud-active-api
+    image: tianon/true
+    restart: "no"
+
+  stud-active-api:
+      container_name: stud-active-api  
+      build:
+          context: .
+      ports:
+          - "7777:443"
+      depends_on:
+        - stud-active-db
+
+  stud-active-db:
+      container_name: stud-active-db
+      image: 'mcr.microsoft.com/mssql/server'
+      ports:
+        - '7778:1433'
+      environment:
+        - ACCEPT_EULA=Y
+        - MSSQL_SA_PASSWORD=lYX3aE0Q57
+      volumes:
+        - './drive:/var/opt/mssql'
+  
