@@ -36,7 +36,7 @@ namespace StudActiveAPI.Services
         {
             //if (!optionsBuilder.IsConfigured)
             //{
-                optionsBuilder.UseSqlServer("Server=192.168.1.103;Database=StudActiveDB;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer("Server=DENPOL\\SQLEXPRESS;Database=StudActiveDB;Trusted_Connection=True;Encrypt=False;TrustServerCertificate=True");
             //}
         }
 
