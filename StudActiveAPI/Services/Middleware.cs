@@ -12,21 +12,23 @@ namespace StudActiveAPI.Services
         public async Task InvokeAsync(HttpContext context, Context con)
         {
             _con = con;
-            string authHeader = context.Request.Headers["userid"];
+            string? authHeader = context.Request.Headers["userid"];
             if (authHeader != null)
             {
-                User user = _con.Users.FirstOrDefault(it => it.Id == Guid.Parse(authHeader));
+                var pUsers = _con.PermissionsUsers.ToList();
+                var user = _con.Users.FirstOrDefault(it => it.Id == Guid.Parse(authHeader));
 
                 var method = context.Request.Method;
                 if (user != null && user.isValid)
                 {
-                    List<PermissionsUser> permissionsUser = _con.PermissionsUsers.Where(p => p.UserId == user.Id).ToList();
-                    List<int> permissionsUserIds = permissionsUser.Select(p => p.PermissionId).ToList();
+                    var permissionsUser = pUsers.Where(p => p.UserId == user.Id).ToList();
+                    var permissionsUserIds = permissionsUser.Select(p => p.PermissionId).ToList();
                     if (permissionsUserIds != null)
                     {
-                        Permission permissions = _con.Permissions.Where(p => permissionsUserIds.Contains(p.Id)).FirstOrDefault();
-
-                        if (method == "GET" && permissions.Title.Contains("read") || method == "POST" && permissions.Title.Contains("create"))
+                        var permissions = _con.Permissions.Where(p => permissionsUserIds.Contains(p.Id)).ToList();
+                        var permissionsTitle = new List<string>();
+                        permissions.ForEach(p=> permissionsTitle.Add(p.Title));
+                        if (method == "GET" && permissionsTitle.Contains("read") || method == "POST" && permissionsTitle.Contains("create"))
                         {
                             await _next(context);
                         }
