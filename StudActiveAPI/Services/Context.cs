@@ -34,10 +34,11 @@ namespace StudActiveAPI.Services
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //if (!optionsBuilder.IsConfigured)
-            //{
-                optionsBuilder.UseSqlServer("Server=DENPOL,1433;Database=StudActiveDB;User Id=sa;Password=denpol.11.22.63;Trust Server Certificate=true;");
-            //}
+            var builder = new ConfigurationBuilder();
+            var config = builder.Build();
+            //optionsBuilder.UseSqlServer("Server=DENPOL,1433;Database=StudActiveDB;User Id=sa;Password=denpol.11.22.63;Trust Server Certificate=true;");//база домашняя
+            optionsBuilder.UseSqlServer("Server=217.28.223.127,17160;User Id=user_d3945;Password=9y$GC6d*sW?4;Database=db_556ff;Trust Server Certificate=true;");
+            //optionsBuilder.UseSqlServer(config.GetConnectionString("Prod"));//база серверная
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

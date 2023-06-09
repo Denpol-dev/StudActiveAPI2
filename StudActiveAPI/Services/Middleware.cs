@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using StudActiveAPI.Models;
+using System.Diagnostics;
 
 namespace StudActiveAPI.Services
 {
@@ -12,16 +13,17 @@ namespace StudActiveAPI.Services
         public async Task InvokeAsync(HttpContext context, Context con)
         {
             _con = con;
+
             string? authHeader = context.Request.Headers["userid"];
+            string? loginuser = context.Request.Headers["username"];
             if (authHeader != null)
             {
-                var pUsers = _con.PermissionsUsers.ToList();
                 var user = _con.Users.FirstOrDefault(it => it.Id == Guid.Parse(authHeader));
 
                 var method = context.Request.Method;
                 if (user != null && user.isValid)
                 {
-                    var permissionsUser = pUsers.Where(p => p.UserId == user.Id).ToList();
+                    var permissionsUser = _con.PermissionsUsers.Where(p => p.UserId == user.Id).ToList();
                     var permissionsUserIds = permissionsUser.Select(p => p.PermissionId).ToList();
                     if (permissionsUserIds != null)
                     {
@@ -41,9 +43,17 @@ namespace StudActiveAPI.Services
                 }
                 else context.Response.StatusCode = 401; return;
             }
+            else if (loginuser != null)
+            {
+                var user = _con.Users.FirstOrDefault(it => it.UserName == loginuser);
+
+                if (user != null)
+                {
+                    await _next(context);
+                }
+            }
             else
             {
-                // no authorization header
                 context.Response.StatusCode = 426; //Unauthorized
                 return;
             }

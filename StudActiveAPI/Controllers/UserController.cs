@@ -10,6 +10,13 @@ namespace StudActiveAPI.Controllers
     {
         private Context _context;
         public UserController(Context context) { _context = context; }
+
+        [HttpGet("login")]
+        public async Task<IActionResult> Login([FromBody] LoginModel model)
+        {
+            return Ok(await model.LoginHash());
+        }
+
         [HttpGet]
         public JsonResult GetUsers()
         {
